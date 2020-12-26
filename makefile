@@ -26,4 +26,4 @@ build/cluster.o: src/cluster.cpp
 	g++ -O3 -c src/cluster.cpp -o build/cluster.o
 
 clean:
-	rm lsh cluster build/*.o
+	rm search cluster build/*.o
