@@ -1,4 +1,4 @@
-#include "../headers/exhausting.h"
+#include "../headers/kmeans.h"
 
 void Nearest_Centroids::set_nearest_centroid1(int a)
 {
@@ -65,21 +65,6 @@ int kmeans::get_LSH_k()
     return LSH_k;
 }
 
-int kmeans::get_HC_k()
-{
-    return HC_k;
-}
-
-int kmeans::get_HC_M()
-{
-    return HC_M;
-}
-
-int kmeans::get_probes()
-{
-    return probes;
-}
-
 int kmeans::get_dimensions()
 {
     return dimensions;
@@ -123,21 +108,6 @@ void kmeans::info_initialization(string configuration_file)
                 {
                     iss >> word;
                     LSH_k = stoi(word);
-                }
-                else if(word == "max_number_M_hypercube:")
-                {
-                    iss >> word;
-                    HC_M = stoi(word);
-                }
-                else if(word == "number_of_hypercube_dimensions:")
-                {
-                    iss >> word;
-                    HC_k = stoi(word);
-                }
-                else if(word == "number_of_probes:")
-                {
-                    iss >> word;
-                    probes = stoi(word);
                 }
             } 
         }

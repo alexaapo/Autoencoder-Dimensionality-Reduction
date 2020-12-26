@@ -76,7 +76,7 @@ int main(int argc, char** argv)
         LSH* lsh = NULL;
         Cluster* Lloyd = NULL;
 
-        if(strcmp(argv[0],"./lsh") == 0)    
+        if(strcmp(argv[0],"./search") == 0)    
         {
             lsh = new LSH(input_file_original_space,input_file_new_space,query_file_original_space,query_file_new_space,output_file,L,k);    
             lsh->InitLSH();
@@ -92,7 +92,7 @@ int main(int argc, char** argv)
         cout << endl << "Do you want to question something else? (y/n)" << endl;
         cin >> answer;
 
-        if(strcmp(argv[0],"./lsh") == 0)    delete lsh;       
+        if(strcmp(argv[0],"./search") == 0)    delete lsh;       
         else if(strcmp(argv[0],"./cluster") == 0)   delete Lloyd;
         
         if((answer == "no") || (answer == "No") || (answer == "NO") || (answer == "n") || (answer =="N"))
@@ -102,16 +102,6 @@ int main(int argc, char** argv)
             file.close();
             break;
         }
-        // else
-        // {
-        //     fstream file;
-        //     file.open(output_file, std::ofstream::out | std::ofstream::trunc);
-        //     file.close();
-
-        //     cout << "Please give a new query file:\n";
-        //     cin >> query_file;
-        // } 
-
     }
     return 0; 
     }

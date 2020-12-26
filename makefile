@@ -2,7 +2,7 @@ cluster: build/read_binary_file.o build/bucket.o build/exhausting.o build/lsh.o 
 	g++ -O3 build/main.o build/read_binary_file.o build/bucket.o build/exhausting.o build/lsh.o build/hypercube.o build/kmeans.o build/cluster.o -o cluster
 
 lsh: build/main.o build/read_binary_file.o build/bucket.o build/exhausting.o build/lsh.o build/kmeans.o build/cluster.o 
-	g++ -O3 build/main.o build/read_binary_file.o build/bucket.o build/exhausting.o build/lsh.o build/kmeans.o build/cluster.o -o lsh
+	g++ -O3 build/main.o build/read_binary_file.o build/bucket.o build/exhausting.o build/lsh.o build/kmeans.o build/cluster.o -o search
 
 build/main.o: src/main.cpp
 	g++ -O3 -c src/main.cpp -o build/main.o

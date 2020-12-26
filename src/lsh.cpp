@@ -141,7 +141,7 @@ void LSH::Approximate_LSH()
         file << "tLSH: " << tLSH[i] << "μs" << endl << "tTrue: " << tTrue[i] << "μs";
         time_error += tLSH[i]/tTrue[i];
 
-        Approximate_Range_Search(i);
+        // Approximate_Range_Search(i);
     }
 
     file << endl << "LSH Mean Distance Error: " << dist_AF/(double)(Num_of_Queries*N) << endl;
@@ -222,7 +222,7 @@ void LSH::InitLSH()
     
     //Read query binary file...
     Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,1);
-   
+    
     file.open(output_file,ios::out);
 
     if(file)

@@ -9,14 +9,14 @@ void Read_BF(item ***, int *, int *, int *, string, int );
 class kmeans
 {
     private:
-        int K,L,LSH_k,HC_k,HC_M,probes,dimensions,number_of_images,cols,rows;
+        int K,L,LSH_k,dimensions,number_of_images,cols,rows;
         item** Images_Array;
         int* centroids;
         double kmeans_time;
 
     public:
         kmeans(string input_file,string conf)
-        :L(3),LSH_k(4),HC_M(10),HC_k(3),probes(2)
+        :L(3),LSH_k(4)
         {
             Read_BF(&Images_Array,&number_of_images,&cols,&rows,input_file,1);
             dimensions = cols*rows;
@@ -39,9 +39,6 @@ class kmeans
         int get_K();
         int get_L();
         int get_LSH_k();
-        int get_HC_k();
-        int get_HC_M();
-        int get_probes();
         int get_dimensions();
         int get_number_of_images();
         double get_kmeans_time();
