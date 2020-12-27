@@ -221,7 +221,7 @@ void LSH::InitLSH()
     Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,1);
     
     //Read query binary file...
-    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,1);
+    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,10);
     
     file.open(output_file,ios::out);
 
@@ -261,7 +261,8 @@ void LSH::InitLSH()
     tLSH = new double[Num_of_Queries];
     tTrue = new double[Num_of_Queries];
 
-    W = 4000;
+    // W = 4000;
+    W = 20000;
     file << "W:" << W << endl << endl;
 
     //Do exhausting search and init W...
