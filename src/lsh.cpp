@@ -223,8 +223,10 @@ void LSH::InitLSH()
     //Read query binary file...
     Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,1);
 
-    //Read binary files in new space...
+    //Read input binary file in new space...
     Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,1);
+    
+    //Read query binary file in new space...
     Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,1);
 
     file.open(output_file,ios::out);
@@ -234,25 +236,25 @@ void LSH::InitLSH()
         file << "Original space" << endl << "Images:" << Num_of_Images << endl << "Queries:" << Num_of_Queries << endl << "Dimensions:" << Rows << "x" << Columns << endl << endl;
         file << "New space" << endl << "Images:" << New_Num_of_Images << endl << "Queries:" << New_Num_of_Queries << endl << "Dimensions:" << New_Rows << "x" << New_Columns << endl << endl;
         
-        for(int f=0;f<100;f++)
-        {
-            for(int g=0;g<New_Columns*New_Rows;g++)
-            {
-                file << New_Images_Array[f][g] << " ";
-            }
-            file << endl;
-        }
+        // for(int f=0;f<100;f++)
+        // {
+        //     for(int g=0;g<New_Columns*New_Rows;g++)
+        //     {
+        //         file << New_Images_Array[f][g] << " ";
+        //     }
+        //     file << endl;
+        // }
 
-        file << endl << endl;
+        // file << endl << endl;
 
-        for(int f=0;f<100;f++)
-        {
-            for(int g=0;g<New_Columns*New_Rows;g++)
-            {
-                file << New_Queries_Array[f][g] << " ";
-            }
-            file << endl;
-        }
+        // for(int f=0;f<100;f++)
+        // {
+        //     for(int g=0;g<New_Columns*New_Rows;g++)
+        //     {
+        //         file << New_Queries_Array[f][g] << " ";
+        //     }
+        //     file << endl;
+        // }
     }
     else cout << "Problem\n";
 
