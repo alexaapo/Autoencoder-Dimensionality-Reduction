@@ -9,11 +9,11 @@ class Bucket;
 class LSH
 {
     private:
-        int Num_of_Images,Num_of_Queries,k,L,R,dimensions,W,N,m,M,HashTableSize;
+        int Num_of_Images,Num_of_Queries,New_Num_of_Images,New_Num_of_Queries,k,L,R,dimensions,New_dimensions,W,N,m,M,HashTableSize;
         int* modulars;
         double *tLSH,*tTrue,dist_AF,time_error;
         int **s_i,**True_Distances;
-        item **Images_Array,**Queries_Array;
+        item **Images_Array,**Queries_Array,**New_Images_Array,**New_Queries_Array;
         Bucket*** Hash_Tables;
         string input_file_original_space,input_file_new_space,query_file_original_space,query_file_new_space,output_file;
         fstream file;
