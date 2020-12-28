@@ -5,6 +5,11 @@ int LSH::get_dimensions()
     return dimensions;
 }
 
+int LSH::get_New_dimensions()
+{
+    return New_dimensions;
+}
+
 int LSH::get_M()
 {
     return M;
@@ -40,9 +45,19 @@ int LSH::get_Num_of_Images()
     return Num_of_Images;
 }
 
+int LSH::get_New_Num_of_Images()
+{
+    return New_Num_of_Images;
+}
+
 int LSH::get_Num_of_Queries()
 {
     return Num_of_Queries;
+}
+
+int LSH::get_New_Num_of_Queries()
+{
+    return New_Num_of_Queries;
 }
 
 int* LSH::get_modulars()
@@ -60,9 +75,29 @@ double* LSH::get_tTrue()
     return tTrue;
 }
 
+double* LSH::get_tReduced()
+{
+    return tReduced;
+}
+
 int** LSH::get_True_Distances()
 {
     return True_Distances;
+}
+
+int** LSH::get_True_Neighbors()
+{
+    return True_Neighbors;
+}
+
+int** LSH::get_Reduced_Distances()
+{
+    return Reduced_Distances;
+}
+
+int** LSH::get_True_Reduced_Neighbors()
+{
+    return True_Reduced_Neighbors;
 }
 
 item** LSH::get_Images_Array()
@@ -73,6 +108,16 @@ item** LSH::get_Images_Array()
 item** LSH::get_Queries_Array()
 {
     return Queries_Array;
+}
+
+item** LSH::get_New_Images_Array()
+{
+    return New_Images_Array;
+}
+
+item** LSH::get_New_Queries_Array()
+{
+    return New_Queries_Array;
 }
 
 Bucket*** LSH::get_Hash_Tables()
@@ -132,19 +177,23 @@ void LSH::Approximate_LSH()
             LSH_Distances[k] = distances.top().first;
             LSH_nns[k] = distances.top().second;
             distances.pop();
-            file << "Nearest neighbor-" << k+1 << ": " << LSH_nns[k] << endl;
+            file << "Nearest neighbor Reduced: " << True_Reduced_Neighbors[i][k] << endl;
+            file << "Nearest neighbor LSH: " << LSH_nns[k] << endl;
+            file << "Nearest neighbor True: " << True_Neighbors[i][k] << endl;
+            
+            file << "distanceReduced: " << Reduced_Distances[i][k] << endl;
             file << "distanceLSH: " << LSH_Distances[k] << endl;
             file << "distanceTrue: " << True_Distances[i][k] << endl << endl;
             dist_AF += (double)(LSH_Distances[k])/(double)True_Distances[i][k];
         }
         tLSH[i] = chrono::duration_cast<chrono::microseconds>(end - start).count();  
-        file << "tLSH: " << tLSH[i] << "μs" << endl << "tTrue: " << tTrue[i] << "μs";
+        file << "tReduced: " << tReduced[i] << "μs" << endl << "tLSH: " << tLSH[i] << "μs" << endl << "tTrue: " << tTrue[i] << "μs";
         time_error += tLSH[i]/tTrue[i];
 
         // Approximate_Range_Search(i);
     }
 
-    file << endl << "LSH Mean Distance Error: " << dist_AF/(double)(Num_of_Queries*N) << endl;
+    file << endl << "Approximation Factor LSH: " << dist_AF/(double)(Num_of_Queries*N) << endl;
     file << endl << "tLSH/tTrue: " << time_error/(double)(Num_of_Queries) << endl << endl;
     
     //Print Buckets...
@@ -218,16 +267,16 @@ void LSH::InitLSH()
     int Rows=0,Columns=0,New_Rows=0,New_Columns=0;
 
     //Read input binary file...
-    Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,1);
+    Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,10);
     
     //Read query binary file...
-    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,1);
+    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,10);
 
     //Read input binary file in new space...
-    Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,1);
+    Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,10);
     
     //Read query binary file in new space...
-    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,1);
+    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,10);
 
     file.open(output_file,ios::out);
 
@@ -236,7 +285,7 @@ void LSH::InitLSH()
         file << "Original space" << endl << "Images:" << Num_of_Images << endl << "Queries:" << Num_of_Queries << endl << "Dimensions:" << Rows << "x" << Columns << endl << endl;
         file << "New space" << endl << "Images:" << New_Num_of_Images << endl << "Queries:" << New_Num_of_Queries << endl << "Dimensions:" << New_Rows << "x" << New_Columns << endl << endl;
         
-        // for(int f=0;f<100;f++)
+        // for(int f=0;f<10;f++)
         // {
         //     for(int g=0;g<New_Columns*New_Rows;g++)
         //     {
@@ -247,7 +296,7 @@ void LSH::InitLSH()
 
         // file << endl << endl;
 
-        // for(int f=0;f<100;f++)
+        // for(int f=0;f<10;f++)
         // {
         //     for(int g=0;g<New_Columns*New_Rows;g++)
         //     {
@@ -274,7 +323,14 @@ void LSH::InitLSH()
     //Initialization of 2D array True_Distances...
     True_Distances = new int*[Num_of_Queries];
     for(int i=0;i<Num_of_Queries;i++)   True_Distances[i] = new int[N];
+    True_Neighbors = new int*[Num_of_Queries];
+    for(int i=0;i<Num_of_Queries;i++)   True_Neighbors[i] = new int[N];
     
+    Reduced_Distances = new int*[New_Num_of_Queries];
+    for(int i=0;i<New_Num_of_Queries;i++)   Reduced_Distances[i] = new int[N];
+    True_Reduced_Neighbors = new int*[New_Num_of_Queries];
+    for(int i=0;i<New_Num_of_Queries;i++)   True_Reduced_Neighbors[i] = new int[N];
+
     //Initialization of m,M...
     M = pow(2,floor((double)32/(double)k));
     m = 423255;
@@ -288,8 +344,8 @@ void LSH::InitLSH()
     //Initialization of tTrue,tLSH arrays...
     tLSH = new double[Num_of_Queries];
     tTrue = new double[Num_of_Queries];
+    tReduced = new double[New_Num_of_Queries];
 
-    // W = 4000;
     W = 20000;
     file << "W:" << W << endl << endl;
 

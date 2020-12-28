@@ -11,8 +11,8 @@ class LSH
     private:
         int Num_of_Images,Num_of_Queries,New_Num_of_Images,New_Num_of_Queries,k,L,R,dimensions,New_dimensions,W,N,m,M,HashTableSize;
         int* modulars;
-        double *tLSH,*tTrue,dist_AF,time_error;
-        int **s_i,**True_Distances;
+        double *tLSH,*tTrue,*tReduced,dist_AF,time_error;
+        int **s_i,**True_Distances,**Reduced_Distances,**True_Neighbors,**True_Reduced_Neighbors;
         item **Images_Array,**Queries_Array,**New_Images_Array,**New_Queries_Array;
         Bucket*** Hash_Tables;
         string input_file_original_space,input_file_new_space,query_file_original_space,query_file_new_space,output_file;
@@ -34,6 +34,7 @@ class LSH
         void Deallocation_of_Memory();
         
         int get_dimensions();
+        int get_New_dimensions();
         int get_M();
         int get_k();
         int get_L();
@@ -41,13 +42,21 @@ class LSH
         int get_W();
         int get_HashTableSize();
         int get_Num_of_Images();
+        int get_New_Num_of_Images();
         int get_Num_of_Queries();
+        int get_New_Num_of_Queries();
         int* get_modulars();
         int** get_s_i();
         double* get_tTrue();
+        double* get_tReduced();
         int** get_True_Distances();
+        int** get_True_Neighbors();
+        int** get_Reduced_Distances();
+        int** get_True_Reduced_Neighbors();
         item** get_Images_Array();
+        item** get_New_Images_Array();
         item** get_Queries_Array();
+        item** get_New_Queries_Array();
         Bucket*** get_Hash_Tables();
 };
 
