@@ -27,5 +27,7 @@ typedef int item;
 #include "../headers/lsh.h"
 
 int ReverseInt(int);
-void Read_BF(item***,int*,int*,int*,string,int a);
+void Read_BF(item***,int*,int*,int*,string,int);
+void Read_BF2(item***,int*,int*,int*,string,int);
+
 #endif
