@@ -49,10 +49,10 @@ void Read_BF(item*** Array,int* number_of_images, int* n_cols, int* n_rows, stri
 
             for(int z=0;z<rows*cols;z++)
             {
-                    //Read each integer of binary file and store him into our array.
-                    unsigned char temp=0;
-                    file.read((char*)&temp,sizeof(temp));
-                    (*Array)[i][z] = (item)temp;
+                //Read each integer of binary file and store him into our array.
+                unsigned char temp=0;
+                file.read((char*)&temp,sizeof(temp));
+                (*Array)[i][z] = (item)temp;
             }
             
             //In last position store index...
@@ -100,10 +100,10 @@ void Read_BF2(item*** Array,int* number_of_images, int* n_cols, int* n_rows, str
 
             for(int z=0;z<rows*cols;z++)
             {
-                    //Read each integer of binary file and store him into our array.
-                    unsigned short int temp=0;
-                    file.read((char*)&temp,sizeof(temp));
-                    (*Array)[i][z] = (item)temp;
+                //Read each integer of binary file and store him into our array.
+                unsigned short int temp=0;
+                file.read((char*)&temp,sizeof(temp));
+                (*Array)[i][z] = (item)temp;
             }
             
             //In last position store index...
