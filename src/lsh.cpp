@@ -290,7 +290,7 @@ void LSH::InitLSH()
         file << "Original space" << endl << "Images:" << Num_of_Images << endl << "Queries:" << Num_of_Queries << endl << "Dimensions:" << Rows << "x" << Columns << endl << endl;
         file << "New space" << endl << "Images:" << New_Num_of_Images << endl << "Queries:" << New_Num_of_Queries << endl << "Dimensions:" << New_Rows << "x" << New_Columns << endl << endl;
         
-        for(int f=0;f<1;f++)
+        for(int f=0;f<2;f++)
         {
             for(int g=0;g<New_Columns*New_Rows;g++)
             {
@@ -301,7 +301,7 @@ void LSH::InitLSH()
 
         file << endl << endl;
 
-        for(int f=0;f<1;f++)
+        for(int f=0;f<2;f++)
         {
             for(int g=0;g<New_Columns*New_Rows;g++)
             {
