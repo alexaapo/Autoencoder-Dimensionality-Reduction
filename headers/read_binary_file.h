@@ -16,6 +16,7 @@
 #include <sstream>
 #include <bits/stdc++.h> 
 #include <time.h>
+#include <stdlib.h>
 
 using namespace std;
 using namespace std::chrono;

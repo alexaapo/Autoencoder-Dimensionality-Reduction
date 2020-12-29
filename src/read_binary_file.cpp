@@ -101,8 +101,16 @@ void Read_BF2(item*** Array,int* number_of_images, int* n_cols, int* n_rows, str
             for(int z=0;z<rows*cols;z++)
             {
                 //Read each integer of binary file and store him into our array.
-                unsigned short int temp=0;
+                unsigned short int temp=0,mask=0;
                 file.read((char*)&temp,sizeof(temp));
+                mask=temp;
+                // mask = temp = T-H
+                temp = temp << 8;  
+                //temp = H-0
+                mask = mask >> 8;
+                //mask = 0-T
+                temp = temp | mask;      
+                //temp = H-T     
                 (*Array)[i][z] = (item)temp;
             }
             
