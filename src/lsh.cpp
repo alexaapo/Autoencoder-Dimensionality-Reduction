@@ -275,13 +275,13 @@ void LSH::InitLSH()
     Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,10);
     
     //Read query binary file...
-    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,10);
+    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,100);
 
     //Read input binary file in new space...
     Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,10);
     
     //Read query binary file in new space...
-    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,10);
+    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,100);
 
     file.open(output_file,ios::out);
 
@@ -389,6 +389,14 @@ void LSH::Deallocation_of_Memory()
     for(int i=0;i<Num_of_Queries;i++)    delete [] Queries_Array[i];
     delete [] Queries_Array;
 
+    //Deallocation of memory of Images_Array...
+    for(int i=0;i<New_Num_of_Images;i++)    delete [] New_Images_Array[i];
+    delete [] New_Images_Array;
+
+    //Deallocation of memory of Queries_Array...
+    for(int i=0;i<New_Num_of_Queries;i++)    delete [] New_Queries_Array[i];
+    delete [] New_Queries_Array;
+
     //Deallocation of memory of s_i...
     for(int i=0;i<(k*L);i++)    delete [] s_i[i];
     delete [] s_i;        
@@ -405,11 +413,24 @@ void LSH::Deallocation_of_Memory()
 
     //Deallocation of memory of True_Distances...
     for(int i=0;i<Num_of_Queries;i++)  
+    {
         delete [] True_Distances[i];
+        delete [] Reduced_Distances[i];
+        delete [] True_Neighbors[i];
+        delete [] True_Reduced_Neighbors[i];
+        delete [] LSH_nns[i];
+        delete [] LSH_Distances[i];        
+    }
     delete [] True_Distances;
+    delete [] Reduced_Distances;
+    delete [] True_Neighbors;
+    delete [] True_Reduced_Neighbors;
+    delete [] LSH_nns;
+    delete [] LSH_Distances;   
     
     //Deallocation of memory of tLSH,tTrue,modulars...
     delete [] tLSH;
     delete [] tTrue;
+    delete [] tReduced;
     delete [] modulars;
 }
