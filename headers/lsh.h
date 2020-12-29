@@ -11,8 +11,8 @@ class LSH
     private:
         int Num_of_Images,Num_of_Queries,New_Num_of_Images,New_Num_of_Queries,k,L,R,dimensions,New_dimensions,W,N,m,M,HashTableSize;
         int* modulars;
-        double *tLSH,*tTrue,*tReduced,dist_AF,time_error;
-        int **s_i,**True_Distances,**Reduced_Distances,**True_Neighbors,**True_Reduced_Neighbors;
+        double *tLSH,*tTrue,*tReduced,dist_AF,red_dist_AF,time_error;
+        int **s_i,**True_Distances,**Reduced_Distances,**True_Neighbors,**True_Reduced_Neighbors,**LSH_nns,**LSH_Distances;
         item **Images_Array,**Queries_Array,**New_Images_Array,**New_Queries_Array;
         Bucket*** Hash_Tables;
         string input_file_original_space,input_file_new_space,query_file_original_space,query_file_new_space,output_file;
@@ -20,7 +20,7 @@ class LSH
     
     public:
         LSH(string input_file_orig,string input_file_new,string query_file_orig,string query_file_new,string output_file_,int L_,int k_)
-        :input_file_original_space(input_file_orig),input_file_new_space(input_file_new),query_file_original_space(query_file_orig),query_file_new_space(query_file_new),output_file(output_file_),L(L_),N(1),k(k_),dist_AF(0.0),time_error(0.0)
+        :input_file_original_space(input_file_orig),input_file_new_space(input_file_new),query_file_original_space(query_file_orig),query_file_new_space(query_file_new),output_file(output_file_),L(L_),N(1),k(k_),dist_AF(0.0),red_dist_AF(0.0),time_error(0.0)
         {}
 
         ~LSH()

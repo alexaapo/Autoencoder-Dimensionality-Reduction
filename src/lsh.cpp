@@ -131,7 +131,7 @@ void LSH::Approximate_LSH()
     //For each query of query's dataset.
     for(int i=0;i<Num_of_Queries;i++)
     {
-        int LSH_nns[N],LSH_Distances[N]; 
+        int temp_dist=0;
         auto start = chrono::high_resolution_clock::now(); 
         
         //Use of priority queue so as to fill it with images of appropriate buckets (and keep the N best ones in the end).
@@ -174,17 +174,20 @@ void LSH::Approximate_LSH()
         
         for(int k=0;k<N;k++)
         {
-            LSH_Distances[k] = distances.top().first;
-            LSH_nns[k] = distances.top().second;
+            LSH_Distances[i][k] = distances.top().first;
+            LSH_nns[i][k] = distances.top().second;
             distances.pop();
             file << "Nearest neighbor Reduced: " << True_Reduced_Neighbors[i][k] << endl;
-            file << "Nearest neighbor LSH: " << LSH_nns[k] << endl;
-            file << "Nearest neighbor True: " << True_Neighbors[i][k] << endl;
+            file << "Nearest neighbor LSH: " << LSH_nns[i][k] << endl;
+            file << "Nearest neighbor True: " << True_Neighbors[i][k] << endl << endl;
             
             file << "distanceReduced: " << Reduced_Distances[i][k] << endl;
-            file << "distanceLSH: " << LSH_Distances[k] << endl;
+            file << "distanceLSH: " << LSH_Distances[i][k] << endl;
             file << "distanceTrue: " << True_Distances[i][k] << endl << endl;
-            dist_AF += (double)(LSH_Distances[k])/(double)True_Distances[i][k];
+            dist_AF += (double)(LSH_Distances[i][k])/(double)True_Distances[i][k];
+
+            temp_dist = ManhattanDistance(Queries_Array[i],Images_Array[True_Reduced_Neighbors[i][k]],dimensions);
+            red_dist_AF += (double)(temp_dist)/(double)True_Distances[i][k];
         }
         tLSH[i] = chrono::duration_cast<chrono::microseconds>(end - start).count();  
         file << "tReduced: " << tReduced[i] << "μs" << endl << "tLSH: " << tLSH[i] << "μs" << endl << "tTrue: " << tTrue[i] << "μs";
@@ -192,9 +195,11 @@ void LSH::Approximate_LSH()
 
         // Approximate_Range_Search(i);
     }
-
-    file << endl << "Approximation Factor LSH: " << dist_AF/(double)(Num_of_Queries*N) << endl;
-    file << endl << "tLSH/tTrue: " << time_error/(double)(Num_of_Queries) << endl << endl;
+    
+    file << endl << "--------------------------------------------" << endl;
+    file << "Approximation Factor LSH: " << dist_AF/(double)(Num_of_Queries*N) << endl;
+    file << "Approximation Factor Reduced: " << red_dist_AF/(double)(Num_of_Queries*N) << endl << endl;
+    // file << endl << "tLSH/tTrue: " << time_error/(double)(Num_of_Queries) << endl << endl;
     
     //Print Buckets...
     for(int i=0;i<L;i++)
@@ -325,6 +330,11 @@ void LSH::InitLSH()
     for(int i=0;i<Num_of_Queries;i++)   True_Distances[i] = new int[N];
     True_Neighbors = new int*[Num_of_Queries];
     for(int i=0;i<Num_of_Queries;i++)   True_Neighbors[i] = new int[N];
+    
+    LSH_Distances = new int*[Num_of_Queries];
+    for(int i=0;i<Num_of_Queries;i++)   LSH_Distances[i] = new int[N];
+    LSH_nns = new int*[Num_of_Queries];
+    for(int i=0;i<Num_of_Queries;i++)   LSH_nns[i] = new int[N];
     
     Reduced_Distances = new int*[New_Num_of_Queries];
     for(int i=0;i<New_Num_of_Queries;i++)   Reduced_Distances[i] = new int[N];
