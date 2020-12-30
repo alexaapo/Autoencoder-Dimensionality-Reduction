@@ -91,8 +91,10 @@ for i in np.nditer(array):
 
 print(a)
 
-s = int.from_bytes(b':q', "big")
-print(s)
+# 11086
+
+s = int.from_bytes(b',\xc0'  , "big")
+print("aytoooooooooooooooooo  ", s)
 
 # s = 14961
 
@@ -100,9 +102,12 @@ array = array.tobytes()
 
 print("heyy", array)
 
-s=1
-s = s.to_bytes(2, byteorder = 'big')
-print(s)
+s=11086
+s = s.to_bytes(2, byteorder = 'little')
+print("edvvvvvvvvvvvvvvvvvvvvvvv",s)
+
+s = int.from_bytes(b',\xc0'  , "big")
+print("aytoooooooooooooooooo     ", s)
 
 # print(a[0])
 
