@@ -1,2 +1,2 @@
 # Project3
-poula
+This is the 3rd assignment of Project.
