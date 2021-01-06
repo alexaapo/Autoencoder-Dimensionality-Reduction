@@ -12,11 +12,12 @@ class Cluster
         map <int,Nearest_Centroids*> points;
         fstream file;
         float epsilon=1e-3;
+        bool original;
         
     public:
 
-        Cluster(string input,string output_file_,string clusters_file_,string conf,bool original)
-        :output_file(output_file_),clusters_file(clusters_file_)
+        Cluster(string input,string output_file_,string clusters_file_,string conf,bool original_)
+        :output_file(output_file_),clusters_file(clusters_file_),original(original_)
         {   
             file.open(output_file,ios::app);
 

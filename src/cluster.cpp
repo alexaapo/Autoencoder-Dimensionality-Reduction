@@ -189,7 +189,10 @@ void Cluster::Print(float* silhouette_array,int time)
         images_in_cluster[cluster]++;
     }
 
-    file << endl << "Algorithm: Lloyds" << endl;
+    if(original)
+        file << endl << "ORIGINAL SPACE" << endl;
+    else
+        file << endl << "NEW SPACE" << endl;
     
     for(int i=0;i<K;i++)   
     {
