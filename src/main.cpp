@@ -52,7 +52,7 @@ int main(int argc, char** argv)
                 input_file_original_space = (argv[i+1]);      
             else if(strcmp(argv[i],"-i") == 0)
                 input_file_new_space = (argv[i+1]);              
-            else if(strcmp(argv[i],"-i") == 0)
+            else if(strcmp(argv[i],"-n") == 0)
                 clusters_file = (argv[i+1]);              
             else if(strcmp(argv[i],"-c") == 0)
                 configuration_file = (argv[i+1]);
