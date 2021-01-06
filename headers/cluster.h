@@ -15,15 +15,15 @@ class Cluster
         
     public:
 
-        Cluster(string input_file_original_space,string input_file_new_space,string output_file_,string clusters_file_,string conf)
+        Cluster(string input,string output_file_,string clusters_file_,string conf,bool original)
         :output_file(output_file_),clusters_file(clusters_file_)
         {   
-            file.open(output_file,ios::out);
+            file.open(output_file,ios::app);
 
             //Allocate memory for kmeans pointer (helpful class kmeans).
-            kmeansptr = new kmeans(input_file_original_space,conf);
+            kmeansptr = new kmeans(input,conf,original);
             
-            file << "Images:" << kmeansptr->get_number_of_images() << endl << "Dimensions:" << sqrt(kmeansptr->get_dimensions()) << "x" << sqrt(kmeansptr->get_dimensions()) << endl <<  "Κ:" << kmeansptr->get_K() << endl << "ε:" << epsilon << endl;
+            file << "Images:" << kmeansptr->get_number_of_images() << endl << "Dimensions:" << kmeansptr->get_rows() << "x" << kmeansptr->get_cols() << endl <<  "Κ:" << kmeansptr->get_K() << endl << "ε:" << epsilon << endl;
 
             //Allocate memory for centroids of each cluster (centroids_dimensions=K*image_dimensions).
             centroids = new item*[kmeansptr->get_K()];
@@ -52,8 +52,6 @@ class Cluster
         
         void Clustering();
         void Lloyd_Assign();
-        void RA_LSH_Assign();
-        void RA_HC_Assign();
         void FastUpdate();
         void SlowUpdate();
         float Objective_Value();

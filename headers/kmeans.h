@@ -15,10 +15,11 @@ class kmeans
         double kmeans_time;
 
     public:
-        kmeans(string input_file,string conf)
+        kmeans(string input_file,string conf,bool original)
         :L(3),LSH_k(4)
         {
-            Read_BF(&Images_Array,&number_of_images,&cols,&rows,input_file,1);
+            if(original)    Read_BF(&Images_Array,&number_of_images,&cols,&rows,input_file,1);
+            else    Read_BF2(&Images_Array,&number_of_images,&cols,&rows,input_file,1);
             dimensions = cols*rows;
             info_initialization(conf);
             centroids = new int[K];
@@ -40,6 +41,8 @@ class kmeans
         int get_L();
         int get_LSH_k();
         int get_dimensions();
+        int get_rows();
+        int get_cols();
         int get_number_of_images();
         double get_kmeans_time();
         int* get_centroids();

@@ -70,6 +70,16 @@ int kmeans::get_dimensions()
     return dimensions;
 }
 
+int kmeans::get_cols()
+{
+    return cols;
+}
+
+int kmeans::get_rows()
+{
+    return rows;
+}
+
 int kmeans::get_number_of_images()
 {
     return number_of_images;
