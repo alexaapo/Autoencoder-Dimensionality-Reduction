@@ -51,7 +51,7 @@ void Cluster::Clustering()
     //Calculate Silhouette values.
     Silhouette(&points,kmeansptr->get_K(),&silhouette_array,kmeansptr);
     
-    Print(silhouette_array,(clustering_time+kmeansptr->get_kmeans_time()));
+    Print(silhouette_array,(clustering_time+kmeansptr->get_kmeans_time()),objectives_values[1]);
 
     delete [] silhouette_array;
 }
@@ -174,7 +174,7 @@ float Cluster::Objective_Value()
     return avg_sum;
 }
 
-void Cluster::Print(float* silhouette_array,int time)
+void Cluster::Print(float* silhouette_array,int time,float last_obj_value)
 {
     //Declaration of important structures,variables...
     int cluster=0,K=kmeansptr->get_K();
@@ -209,22 +209,6 @@ void Cluster::Print(float* silhouette_array,int time)
         if(i<K) file << ", ";
         else    file << " ]";
     }
-    file << endl << endl;
-
-    // if(complete=="yes")
-    // {
-    //     for(int i=0;i<K;i++)   
-    //     {
-    //         file << "CLUSTER-" << i << "{ [ ";
-    //         for(int z=0;z<kmeansptr->get_dimensions();z++)  file << centroids[i][z] << " "; 
-    //         file << "], Images: ";
-
-    //         for(it=points.begin();it!=points.end();it++)    
-    //         {
-    //             cluster = it->second->get_nearest_centroid1();
-    //             if(cluster==i)  file << it->first << ", "; 
-    //         }
-    //         file << "}" << endl << endl;
-    //     }
-    // }
+    
+    file << endl << "Value of Objective Function: " << last_obj_value << endl << endl;
 }
