@@ -3,8 +3,6 @@
 
 #include "../headers/kmeans.h"
 
-class RA_LSH;
-
 class Cluster
 {
     private:

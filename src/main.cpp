@@ -75,6 +75,7 @@ int main(int argc, char** argv)
     {
         LSH* lsh = NULL;
         Cluster* Lloyd = NULL;
+        Cluster* Lloyd2 = NULL;
 
         if(strcmp(argv[0],"./search") == 0)    
         {
@@ -85,7 +86,9 @@ int main(int argc, char** argv)
         else if(strcmp(argv[0],"./cluster") == 0)   
         {
             Lloyd = new Cluster(input_file_original_space,input_file_new_space,output_file,clusters_file,configuration_file);
+            Lloyd2 = new Cluster(input_file_new_space,input_file_original_space,output_file,clusters_file,configuration_file);
             Lloyd->Clustering();
+            Lloyd2->Clustering();
         }
         string answer; 
 
