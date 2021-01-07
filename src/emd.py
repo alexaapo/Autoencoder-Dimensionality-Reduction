@@ -1,6 +1,8 @@
 from pulp import * 
-from math import *
+import math
 import numpy as np
+import struct
+from array import array
 
 def Load_Mnist_Images(train_images_path):
     with open(train_images_path, 'rb') as file:
@@ -16,29 +18,29 @@ def Load_Mnist_Images(train_images_path):
     print("Number of images: ",num_of_images)
     print("Rows of images: ",rows)
     print("Cols of images: ",cols)
-    return (images,rows,cols)
+    return images,rows,cols
 
 def Calculate_Weights(data, size_of_cluster, rows, cols):
     dictionary = dict()
     weight = 0
     name_of_cluster = 0
     centroids = []
-    adj = math.sqrt(size_of_cluster)/2
+    adj = int(math.sqrt(size_of_cluster)/2)
 
-    for row in range(0,rows,math.sqrt(size_of_cluster)):
-        for col in range(0,cols,math.sqrt(size_of_cluster)):
-            centroids.append((row+adj,col+adj))
-            for row_cluster in range(row, row + math.sqrt(size_of_cluster)):
-                for col_cluster in range(col, col + math.sqrt(size_of_cluster)):
+    for row in range(0,rows,int(math.sqrt(size_of_cluster))):
+        for col in range(0,cols,int(math.sqrt(size_of_cluster))):
+            centroids.append(data[row+adj][col+adj])
+            for row_cluster in range(row, row + int(math.sqrt(size_of_cluster))):
+                for col_cluster in range(col, col + int(math.sqrt(size_of_cluster))):
                     weight += data[row_cluster][col_cluster]
             dictionary[str(name_of_cluster)] = weight
             name_of_cluster += 1
             weight = 0
 
-    return (dictionary, centroids)
+    return dictionary, centroids
 
 def main(argv):
-    if(len(sys.argv) != 9):
+    if(len(sys.argv) != 12):
         print("Sorry, the input must be in this form: reduce.py  –d  <dataset>  -q  <queryset>  -od  <output_dataset_file>  -oq  <output_query_file>>")
         exit(1)
     else:
@@ -54,13 +56,13 @@ def main(argv):
         else:
             test_file = str(sys.argv[4])
 
-        if(str(sys.argv[5]) != '-od'):
+        if(str(sys.argv[5]) != '-l1'):
             print("Sorry, the input must be in this form: reduce.py  –d  <dataset>  -q  <queryset>  -od  <output_dataset_file>  -oq  <output_query_file>")
             exit(1)
         else:
             train_labels = str(sys.argv[6])
 
-        if(str(sys.argv[7]) != '-oq'):
+        if(str(sys.argv[7]) != '-l2'):
             print("Sorry, the input must be in this form: reduce.py  –d  <dataset>  -q  <queryset>  -od  <output_dataset_file>  -oq  <output_query_file>")
             exit(1)
         else:
@@ -79,11 +81,25 @@ def main(argv):
     train_images, rows, cols = Load_Mnist_Images(train_file)
     test_images, rows, cols = Load_Mnist_Images(test_file)
 
+    train_images = train_images / np.max(train_images)
+    train_images = train_images.reshape(train_images.shape[0], train_images.shape[1], train_images.shape[2])
+
+    test_images = test_images / np.max(test_images)
+    test_images = test_images.reshape(test_images.shape[0], test_images.shape[1], test_images.shape[2])
+
+    train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
+    test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
+
     size_of_cluster = 49
     num_of_clusters = (rows*cols)/size_of_cluster
 
+    print(type(test_images))
+    print(len(test_images))
+
     for i in range(test_images.shape[0]):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
+        print(type(query_centroids))
+        print(query_centroids)
 
         for j in range(train_images.shape[0]):
             supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
@@ -102,6 +118,8 @@ def main(argv):
             # Creates a list of tuples containing all the possible routes for transport
             routes = [(w,b) for w in demand.keys() for b in supply.keys()]
 
+            print(routes)
+
             # A dictionary called route_vars is created to contain the referenced variables (the routes)
             route_vars = LpVariable.dicts("Route",(demand.keys(),supply.keys()),0,None,LpInteger)
 
@@ -116,12 +134,7 @@ def main(argv):
             for b in supply.keys():
                 prob += lpSum([route_vars[w][b] for w in demand.keys()]) >= demand[b], "Sum of Products into Bars %s"%b
 
-
-
-
-            
-
-
+            print(prob)
         
 
 if __name__ == "__main__":
