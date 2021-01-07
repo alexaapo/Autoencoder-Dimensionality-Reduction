@@ -1,5 +1,6 @@
 from pulp import * 
 from math import *
+import numpy as np
 
 def Load_Mnist_Images(train_images_path):
     with open(train_images_path, 'rb') as file:
@@ -84,6 +85,14 @@ def main(argv):
 
         for j in range(train_images.shape[0]):
             supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
+
+            costs = [[]]
+            for a in query_centroids:
+                cost = []
+                for b in train_centroids:
+                    dist = np.linalg.norm(a-b)
+                    cost.append(dist)
+                costs.append(cost)
             
 
 
