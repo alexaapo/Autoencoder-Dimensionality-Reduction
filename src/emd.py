@@ -93,6 +93,30 @@ def main(argv):
                     dist = np.linalg.norm(a-b)
                     cost.append(dist)
                 costs.append(cost)
+
+            # Creates the prob variable to contain the problem data
+            prob = LpProblem("EMD",LpMinimize)
+
+            # Creates a list of tuples containing all the possible routes for transport
+            routes = [(w,b) for w in demand.keys() for b in supply.keys()]
+
+            # A dictionary called route_vars is created to contain the referenced variables (the routes)
+            route_vars = LpVariable.dicts("Route",(demand.keys(),supply.keys()),0,None,LpInteger)
+
+            # The objective function is added to prob first
+            prob += lpSum([route_vars[w][b]*costs[w][b] for (w,b) in routes]), "Sum of Transporting Costs"
+
+            # The supply maximum constraints are added to prob for each supply node (warehouse)
+            for w in demand.keys():
+                prob += lpSum([route_vars[w][b] for b in supply.keys()]) <= supply[w], "Sum of Products out of Warehouse %s"%w
+
+            # The demand minimum constraints are added to prob for each demand node (bar)
+            for b in supply.keys():
+                prob += lpSum([route_vars[w][b] for w in demand.keys()]) >= demand[b], "Sum of Products into Bars %s"%b
+
+
+
+
             
 
 
