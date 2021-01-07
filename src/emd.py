@@ -112,29 +112,60 @@ def main(argv):
                     cost.append(dist)
                 costs.append(cost)
 
+            costs = makeDict([supply.keys(), demand.keys()],costs,0)
+
             # Creates the prob variable to contain the problem data
             prob = LpProblem("EMD",LpMinimize)
 
             # Creates a list of tuples containing all the possible routes for transport
-            routes = [(w,b) for w in demand.keys() for b in supply.keys()]
+            routes = [(w,b) for w in supply.keys() for b in demand.keys()]
 
             print(routes)
 
             # A dictionary called route_vars is created to contain the referenced variables (the routes)
-            route_vars = LpVariable.dicts("Route",(demand.keys(),supply.keys()),0,None,LpInteger)
+            route_vars = LpVariable.dicts("Route",(supply.keys(),demand.keys()),0,None,LpInteger)
 
             # The objective function is added to prob first
             prob += lpSum([route_vars[w][b]*costs[w][b] for (w,b) in routes]), "Sum of Transporting Costs"
 
             # The supply maximum constraints are added to prob for each supply node (warehouse)
-            for w in demand.keys():
-                prob += lpSum([route_vars[w][b] for b in supply.keys()]) <= supply[w], "Sum of Products out of Warehouse %s"%w
+            for w in supply.keys():
+                prob += lpSum([route_vars[w][b] for b in demand.keys()]) <= supply[w], "Sum of Products out of Warehouse %s"%w
+
+            # # The demand minimum constraints are added to prob for each demand node (bar)
+            # for b in supply.keys():
+            #     prob += lpSum([route_vars[w][b] for w in demand.keys()]) >= demand[b], "Sum of Products into Bars %s"%b
 
             # The demand minimum constraints are added to prob for each demand node (bar)
-            for b in supply.keys():
-                prob += lpSum([route_vars[w][b] for w in demand.keys()]) >= demand[b], "Sum of Products into Bars %s"%b
+            # These constraints are stored for resolve later
+            query_demand_constraint = {}
+            for b in demand.keys():
+                constraint = lpSum([route_vars[w][b] for w in supply.keys()])>=demand[b]
+                prob += constraint, "Sum_of_Products_into_Bar_%s"%b
+                query_demand_constraint[b] = constraint
 
-            print(prob)
+            # print(prob)
+            # The problem data is written to an .lp file
+            prob.writeLP("EMD.lp")
+            for Demand in range(500, 601, 10):
+                # reoptimise the problem by increasing demand at bar '1'
+                # note the constant is stored as the LHS constant not the RHS of the constraint
+                query_demand_constraint['1'].constant = - Demand
+                #or alternatively,
+                #prob.constraints["Sum_of_Products_into_Bar_1"].constant = - demand
+
+                # The problem is solved using PuLP's choice of Solver
+                prob.solve()
+
+                # The status of the solution is printed to the screen
+                print("Status:", LpStatus[prob.status])
+
+                # Each of the variables is printed with it's resolved optimum value
+                for v in prob.variables():
+                    print(v.name, "=", v.varValue)
+
+                # The optimised objective function value is printed to the screen
+                print("Total Cost of Transportation = ", value(prob.objective))
         
 
 if __name__ == "__main__":
