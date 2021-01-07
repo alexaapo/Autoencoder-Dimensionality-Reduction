@@ -15,12 +15,14 @@ def Load_Mnist_Images(train_images_path):
     print("Number of images: ",num_of_images)
     print("Rows of images: ",rows)
     print("Cols of images: ",cols)
-    return images,rows,cols
+    return (images,rows,cols)
 
 def Calculate_Weights(data, size_of_cluster, rows, cols):
     dictionary = dict()
     weight = 0
     name_of_cluster = 0
+    centroids = []
+
     for row in range(0,rows,math.sqrt(size_of_cluster)):
         for col in range(0,cols,math.sqrt(size_of_cluster)):
             for row_cluster in range(row, row + math.sqrt(size_of_cluster)):
@@ -30,7 +32,7 @@ def Calculate_Weights(data, size_of_cluster, rows, cols):
             name_of_cluster += 1
             weight = 0
 
-    return dictionary
+    return (dictionary, centroids)
 
 def main(argv):
     if(len(sys.argv) != 9):
@@ -78,12 +80,12 @@ def main(argv):
     num_of_clusters = (rows*cols)/size_of_cluster
 
     for i in range(test_images.shape[0]):
-        demand = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
+        demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
 
         for j in range(train_images.shape[0]):
-            supply = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
+            supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
             
-            
+
 
         
 
