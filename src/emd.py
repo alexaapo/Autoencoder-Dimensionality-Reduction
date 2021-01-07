@@ -23,9 +23,11 @@ def Calculate_Weights(data, size_of_cluster, rows, cols):
     weight = 0
     name_of_cluster = 0
     centroids = []
+    adj = math.sqrt(size_of_cluster)/2
 
     for row in range(0,rows,math.sqrt(size_of_cluster)):
         for col in range(0,cols,math.sqrt(size_of_cluster)):
+            centroids.append((row+adj,col+adj))
             for row_cluster in range(row, row + math.sqrt(size_of_cluster)):
                 for col_cluster in range(col, col + math.sqrt(size_of_cluster)):
                     weight += data[row_cluster][col_cluster]
