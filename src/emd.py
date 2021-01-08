@@ -40,7 +40,7 @@ def Calculate_Weights(data, size_of_cluster, rows, cols):
 
     for row in range(0,rows,int(math.sqrt(size_of_cluster))):
         for col in range(0,cols,int(math.sqrt(size_of_cluster))):
-            centroids.append(data[row+adj][col+adj])
+            centroids.append((row+adj,col+adj))
             for row_cluster in range(row, row + int(math.sqrt(size_of_cluster))):
                 for col_cluster in range(col, col + int(math.sqrt(size_of_cluster))):
                     weight += data[row_cluster][col_cluster]
@@ -109,11 +109,12 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    train_images = train_images[0:10000]
-    test_images = test_images[0:2]
+    train_images = train_images[0:100]
+    test_images = test_images[0:1]
 
-    size_of_cluster = 16
+    size_of_cluster = 49
     num_of_clusters = (rows*cols)/size_of_cluster
+    flag = True
 
     print(type(test_images))
     print(len(test_images))
@@ -124,7 +125,6 @@ def main(argv):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
         neighboors = PriorityQueue()
 
-        print(type(query_centroids))
         print(query_centroids)
 
         for j in range(train_images.shape[0]):
@@ -135,11 +135,11 @@ def main(argv):
                 for a in query_centroids:
                     cost = []
                     for b in train_centroids:
-                        dist = np.linalg.norm(a-b)
-                        print(a," ",b," ",dist)
+                        dist = math.sqrt( (a[0]-b[0])**2 + (a[1]-b[1])**2 )
                         cost.append(dist)
                     costs.append(cost)
 
+                flag = False
                 costs = makeDict([supply.keys(), demand.keys()],costs,0)
 
             # Creates the prob variable to contain the problem data
@@ -191,7 +191,10 @@ def main(argv):
         tr_labels = [] 
 
         while (neigh < 10):
-            index_label = neighboors.get()[1]
+            n = neighboors.get()
+            index_label = n[1]
+            # index_label = neighboors.get()[1]
+            print(n[0])
             tr_labels.append(labels_of_train[index_label])
             neigh += 1
         
