@@ -1,7 +1,8 @@
-from pulp import * 
+from pulp import *
 import math
 import numpy as np
 import struct
+import sys
 from array import array
 
 def Load_Mnist_Images(train_images_path):
