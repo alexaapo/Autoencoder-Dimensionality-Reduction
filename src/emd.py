@@ -129,7 +129,7 @@ def main(argv):
         for j in range(train_images.shape[0]):
             supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
 
-            costs = [[]]
+            costs = []
             for a in query_centroids:
                 cost = []
                 for b in train_centroids:
@@ -197,7 +197,7 @@ def main(argv):
 
         correct_labels = sum(map(lambda x : x == query_label, tr_labels))
 
-        success_rate = (correct_labels/10)*100
+        success_rate = (correct_labels/10)*10
 
         print("Success rate: ", success_rate, "%\n")
         
