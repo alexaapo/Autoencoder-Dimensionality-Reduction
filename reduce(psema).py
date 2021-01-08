@@ -7,6 +7,8 @@ import random
 # import torch
 import matplotlib.pyplot as plt
 from array import array
+from queue import PriorityQueue
+
 
 # a = np.arange(4).reshape(1,4)
 # a = np.array([1, 2, 3, 4])
@@ -146,3 +148,18 @@ s1 = "1"
 
 print(isinstance(s, str))
 print(isinstance(s1, str))
+
+array = np.arange(20).reshape(5,2,2)
+print(array)
+
+array = array[0:2]
+
+print("\n\n",array)
+
+q = PriorityQueue()
+q.put((10,'ten'))
+q.put((1,'one'))
+q.put((5,'five'))
+
+while not q.empty():
+    print(q.get()[0])

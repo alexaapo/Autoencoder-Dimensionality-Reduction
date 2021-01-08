@@ -4,6 +4,7 @@ import numpy as np
 import struct
 import sys
 from array import array
+from queue import PriorityQueue
 
 def Load_Mnist_Images(train_images_path):
     with open(train_images_path, 'rb') as file:
@@ -16,10 +17,19 @@ def Load_Mnist_Images(train_images_path):
         img = np.array(image_data[i * rows * cols:(i + 1) * rows * cols])
         img = img.reshape(28, 28)
         images[i][:] = img            
+    
     print("Number of images: ",num_of_images)
     print("Rows of images: ",rows)
     print("Cols of images: ",cols)
+    
     return images,rows,cols
+
+def Load_MNIST_Labels(labels_path):
+    labels = []
+    with open(labels_path, 'rb') as file:
+        magic, size = struct.unpack(">II", file.read(8))
+        labels = array("B", file.read()) 
+    return labels
 
 def Calculate_Weights(data, size_of_cluster, rows, cols):
     dictionary = dict()
@@ -82,6 +92,14 @@ def main(argv):
     train_images, rows, cols = Load_Mnist_Images(train_file)
     test_images, rows, cols = Load_Mnist_Images(test_file)
 
+    labels_of_train = Load_MNIST_Labels(train_labels)
+    labels_of_test = Load_MNIST_Labels(test_labels)
+
+    # print(type(labels_of_test))
+    # print(len(labels_of_test))
+    # print(labels_of_test[0])
+    # exit(1)
+
     train_images = train_images / np.max(train_images)
     train_images = train_images.reshape(train_images.shape[0], train_images.shape[1], train_images.shape[2])
 
@@ -91,14 +109,20 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    size_of_cluster = 49
+    train_images = train_images[0:1000]
+    test_images = test_images[0:1]
+
+    size_of_cluster = 16
     num_of_clusters = (rows*cols)/size_of_cluster
 
     print(type(test_images))
     print(len(test_images))
+    print(test_images.shape)
 
     for i in range(test_images.shape[0]):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
+        neighboors = PriorityQueue()
+
         print(type(query_centroids))
         print(query_centroids)
 
@@ -121,7 +145,7 @@ def main(argv):
             # Creates a list of tuples containing all the possible routes for transport
             routes = [(w,b) for w in supply.keys() for b in demand.keys()]
 
-            print(routes)
+            # print(routes)
 
             # A dictionary called route_vars is created to contain the referenced variables (the routes)
             route_vars = LpVariable.dicts("Route",(supply.keys(),demand.keys()),0,None,LpInteger)
@@ -133,41 +157,51 @@ def main(argv):
             for w in supply.keys():
                 prob += lpSum([route_vars[w][b] for b in demand.keys()]) <= supply[w], "Sum of Products out of Warehouse %s"%w
 
-            # # The demand minimum constraints are added to prob for each demand node (bar)
-            # for b in supply.keys():
-            #     prob += lpSum([route_vars[w][b] for w in demand.keys()]) >= demand[b], "Sum of Products into Bars %s"%b
-
             # The demand minimum constraints are added to prob for each demand node (bar)
-            # These constraints are stored for resolve later
-            query_demand_constraint = {}
             for b in demand.keys():
-                constraint = lpSum([route_vars[w][b] for w in supply.keys()])>=demand[b]
-                prob += constraint, "Sum_of_Products_into_Bar_%s"%b
-                query_demand_constraint[b] = constraint
+                prob += lpSum([route_vars[w][b] for w in supply.keys()]) >= demand[b], "Sum_of_Products_into_Bar%s"%b
 
-            # print(prob)
+            
             # The problem data is written to an .lp file
             prob.writeLP("EMD.lp")
-            for Demand in range(500, 601, 10):
-                # reoptimise the problem by increasing demand at bar '1'
-                # note the constant is stored as the LHS constant not the RHS of the constraint
-                query_demand_constraint['1'].constant = - Demand
-                #or alternatively,
-                #prob.constraints["Sum_of_Products_into_Bar_1"].constant = - demand
 
-                # The problem is solved using PuLP's choice of Solver
-                prob.solve()
+            # The problem is solved using PuLP's choice of Solver
+            prob.solve()
 
-                # The status of the solution is printed to the screen
-                print("Status:", LpStatus[prob.status])
+            # The status of the solution is printed to the screen
+            print("Status:", LpStatus[prob.status])
 
-                # Each of the variables is printed with it's resolved optimum value
-                for v in prob.variables():
-                    print(v.name, "=", v.varValue)
+            # Each of the variables is printed with it's resolved optimum value
+            for v in prob.variables():
+                print(v.name, "=", v.varValue)
 
-                # The optimised objective function value is printed to the screen
-                print("Total Cost of Transportation = ", value(prob.objective))
+            # The optimised objective function value is printed to the screen    
+            print("Total Cost of Transportation = ", value(prob.objective))
+
+            neighboors.put((value(prob.objective), j))
+
+        print(neighboors)
+
+        query_label = labels_of_test[i]
+        print("query ", query_label)
+
+        neigh = 0
+        tr_labels = [] 
+
+        while (neigh < 10):
+            index_label = neighboors.get()[1]
+            tr_labels.append(labels_of_train[index_label])
+            neigh += 1
         
+        print("train labels: ",tr_labels)  
+
+        correct_labels = sum(map(lambda x : x == query_label, tr_labels))
+
+        success_rate = (correct_labels/10)*100
+
+        print("Success rate: ", success_rate, "%\n")
+        
+
 
 if __name__ == "__main__":
     main(sys.argv[0:])
