@@ -109,8 +109,8 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    train_images = train_images[0:1000]
-    test_images = test_images[0:1]
+    train_images = train_images[0:10000]
+    test_images = test_images[0:2]
 
     size_of_cluster = 16
     num_of_clusters = (rows*cols)/size_of_cluster
@@ -118,6 +118,7 @@ def main(argv):
     print(type(test_images))
     print(len(test_images))
     print(test_images.shape)
+    flag = True
 
     for i in range(test_images.shape[0]):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
@@ -129,15 +130,17 @@ def main(argv):
         for j in range(train_images.shape[0]):
             supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
 
-            costs = []
-            for a in query_centroids:
-                cost = []
-                for b in train_centroids:
-                    dist = np.linalg.norm(a-b)
-                    cost.append(dist)
-                costs.append(cost)
+            if flag:
+                costs = []
+                for a in query_centroids:
+                    cost = []
+                    for b in train_centroids:
+                        dist = np.linalg.norm(a-b)
+                        print(a," ",b," ",dist)
+                        cost.append(dist)
+                    costs.append(cost)
 
-            costs = makeDict([supply.keys(), demand.keys()],costs,0)
+                costs = makeDict([supply.keys(), demand.keys()],costs,0)
 
             # Creates the prob variable to contain the problem data
             prob = LpProblem("EMD",LpMinimize)
@@ -160,13 +163,12 @@ def main(argv):
             # The demand minimum constraints are added to prob for each demand node (bar)
             for b in demand.keys():
                 prob += lpSum([route_vars[w][b] for w in supply.keys()]) >= demand[b], "Sum_of_Products_into_Bar%s"%b
-
             
             # The problem data is written to an .lp file
             prob.writeLP("EMD.lp")
 
             # The problem is solved using PuLP's choice of Solver
-            prob.solve()
+            prob.solve(PULP_CBC_CMD(msg=False))
 
             # The status of the solution is printed to the screen
             print("Status:", LpStatus[prob.status])
