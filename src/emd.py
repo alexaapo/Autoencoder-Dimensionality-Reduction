@@ -50,6 +50,14 @@ def Calculate_Weights(data, size_of_cluster, rows, cols):
 
     return dictionary, centroids
 
+
+def ManhattanDistance(x,y,dimensions):
+    sum=0
+    for i in range(dimensions):
+        sum+=abs(x[i]-y[i])  
+    
+    return sum
+
 def main(argv):
     if(len(sys.argv) != 12):
         print("Sorry, the input must be in this form: reduce.py  –d  <dataset>  -q  <queryset>  -od  <output_dataset_file>  -oq  <output_query_file>>")
@@ -109,18 +117,21 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    train_images = train_images[0:100]
-    test_images = test_images[0:1]
+    train_images = train_images[0:500]
+    test_images = test_images[0:2]
 
-    # size_of_cluster = 49 # 7x7
-    size_of_cluster = 16 # 4x4
+    size_of_cluster = 49 # 7x7
+    # size_of_cluster = 16 # 4x4
     num_of_clusters = (rows*cols)/size_of_cluster
-    flag = True
 
     print(type(test_images))
     print(len(test_images))
     print(test_images.shape)
     flag = True
+    total_score = 0.0
+    scores = []
+    query_labels = []
+    total_predicted = []
 
     for i in range(test_images.shape[0]):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
@@ -175,18 +186,18 @@ def main(argv):
             print("Status:", LpStatus[prob.status])
 
             # Each of the variables is printed with it's resolved optimum value
-            for v in prob.variables():
-                print(v.name, "=", v.varValue)
+            # for v in prob.variables():
+                # print(v.name, "=", v.varValue)
 
             # The optimised objective function value is printed to the screen    
-            print("Total Cost of Transportation = ", value(prob.objective))
+            # print("Total Cost of Transportation = ", value(prob.objective))
 
             neighboors.put((value(prob.objective), j))
 
-        print(neighboors)
+        # print(neighboors)
 
         query_label = labels_of_test[i]
-        print("query ", query_label)
+        # print("query ", query_label)
 
         neigh = 0
         tr_labels = [] 
@@ -195,18 +206,28 @@ def main(argv):
             n = neighboors.get()
             index_label = n[1]
             # index_label = neighboors.get()[1]
-            print(n[0])
+            # print(n[0])
             tr_labels.append(labels_of_train[index_label])
             neigh += 1
         
-        print("train labels: ",tr_labels)  
+        # print("True label:",query_label)  
+        # print("Predicted labels: ",tr_labels)  
 
         correct_labels = sum(map(lambda x : x == query_label, tr_labels))
 
-        success_rate = (correct_labels/10)*10
+        success_rate = (correct_labels/10)*100
+        # print("Success rate: ", success_rate, "%\n")
+        total_score += success_rate
+        scores.append(success_rate)
+        query_labels.append(query_label)
+        total_predicted.append(tr_labels)
 
-        print("Success rate: ", success_rate, "%\n")
-        
+
+    for q in range(len(test_images)):
+        print("Query label:",query_labels[q])  
+        print("Predicted labels: ",total_predicted[q])
+        print("Score: ",scores[q],"%\n")      
+    print("Total success rate: ", total_score/len(test_images), "%\n")
 
 
 if __name__ == "__main__":
