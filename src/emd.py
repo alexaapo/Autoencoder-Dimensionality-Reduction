@@ -112,7 +112,8 @@ def main(argv):
     train_images = train_images[0:100]
     test_images = test_images[0:1]
 
-    size_of_cluster = 49
+    # size_of_cluster = 49 # 7x7
+    size_of_cluster = 16 # 4x4
     num_of_clusters = (rows*cols)/size_of_cluster
     flag = True
 
