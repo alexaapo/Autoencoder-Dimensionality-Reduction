@@ -168,7 +168,7 @@ def main(argv):
             prob.writeLP("EMD.lp")
 
             # The problem is solved using PuLP's choice of Solver
-            prob.solve(PULP_CBC_CMD(msg=False))
+            prob.solve()
 
             # The status of the solution is printed to the screen
             print("Status:", LpStatus[prob.status])
