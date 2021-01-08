@@ -162,4 +162,8 @@ q.put((1,'one'))
 q.put((5,'five'))
 
 while not q.empty():
-    print(q.get()[0])
+    # print(q.get()[0])
+    # print(q.get()[1])
+    p = q.get()
+    print(p[0])    
+    print(p[1])    
