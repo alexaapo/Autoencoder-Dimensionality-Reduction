@@ -51,10 +51,11 @@ def Calculate_Weights(data, size_of_cluster, rows, cols):
     return dictionary, centroids
 
 
-def ManhattanDistance(x,y,dimensions):
-    sum=0
-    for i in range(dimensions):
-        sum+=abs(x[i]-y[i])  
+def ManhattanDistance(x,y,rows,cols):
+    sum=0.0
+    for i in range(rows):
+        for j in range(cols):
+            sum+=abs(x[i][j]-y[i][j])  
     
     return sum
 
@@ -117,25 +118,28 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    train_images = train_images[0:500]
-    test_images = test_images[0:2]
+    train_images = train_images[0:100]
+    test_images = test_images[0:5]
 
-    size_of_cluster = 49 # 7x7
-    # size_of_cluster = 16 # 4x4
+    # size_of_cluster = 49 # 7x7
+    size_of_cluster = 16 # 4x4
     num_of_clusters = (rows*cols)/size_of_cluster
 
     print(type(test_images))
     print(len(test_images))
     print(test_images.shape)
     flag = True
-    total_score = 0.0
-    scores = []
+
     query_labels = []
+    scores = []
+    manhattan_scores = []
     total_predicted = []
+    manhattan_total_predicted = []
 
     for i in range(test_images.shape[0]):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
         neighboors = PriorityQueue()
+        manhattan_neighboors = PriorityQueue()
 
         print(query_centroids)
 
@@ -170,11 +174,11 @@ def main(argv):
 
             # The supply maximum constraints are added to prob for each supply node (warehouse)
             for w in supply.keys():
-                prob += lpSum([route_vars[w][b] for b in demand.keys()]) <= supply[w], "Sum of Products out of Warehouse %s"%w
+                prob += lpSum([route_vars[w][b] for b in demand.keys()]) == supply[w], "Sum of Products out of Warehouse %s"%w
 
             # The demand minimum constraints are added to prob for each demand node (bar)
             for b in demand.keys():
-                prob += lpSum([route_vars[w][b] for w in supply.keys()]) >= demand[b], "Sum_of_Products_into_Bar%s"%b
+                prob += lpSum([route_vars[w][b] for w in supply.keys()]) == demand[b], "Sum_of_Products_into_Bar%s"%b
             
             # The problem data is written to an .lp file
             prob.writeLP("EMD.lp")
@@ -193,6 +197,7 @@ def main(argv):
             # print("Total Cost of Transportation = ", value(prob.objective))
 
             neighboors.put((value(prob.objective), j))
+            manhattan_neighboors.put((ManhattanDistance(test_images[i],train_images[j],rows,cols), j))
 
         # print(neighboors)
 
@@ -201,33 +206,40 @@ def main(argv):
 
         neigh = 0
         tr_labels = [] 
+        manhattan_tr_labels = [] 
 
         while (neigh < 10):
             n = neighboors.get()
             index_label = n[1]
+            manhattan_n = manhattan_neighboors.get()
+            manhattan_index_label = manhattan_n[1]
             # index_label = neighboors.get()[1]
             # print(n[0])
             tr_labels.append(labels_of_train[index_label])
+            manhattan_tr_labels.append(labels_of_train[manhattan_index_label])
             neigh += 1
         
-        # print("True label:",query_label)  
-        # print("Predicted labels: ",tr_labels)  
+        query_labels.append(query_label)
 
         correct_labels = sum(map(lambda x : x == query_label, tr_labels))
-
         success_rate = (correct_labels/10)*100
-        # print("Success rate: ", success_rate, "%\n")
-        total_score += success_rate
         scores.append(success_rate)
-        query_labels.append(query_label)
         total_predicted.append(tr_labels)
+        
+        manhattan_correct_labels = sum(map(lambda x : x == query_label, manhattan_tr_labels))
+        manhattan_success_rate = (manhattan_correct_labels/10)*100
+        manhattan_scores.append(manhattan_success_rate)
+        manhattan_total_predicted.append(manhattan_tr_labels)
 
 
     for q in range(len(test_images)):
         print("Query label:",query_labels[q])  
         print("Predicted labels: ",total_predicted[q])
-        print("Score: ",scores[q],"%\n")      
-    print("Total success rate: ", total_score/len(test_images), "%\n")
+        print("Score: ",scores[q],"%")
+        print("Manhattan Predicted labels: ",manhattan_total_predicted[q])
+        print("Manhattan Score: ",manhattan_scores[q],"%\n")       
+    print("Average Correct Search Results EMD: ", sum(scores)/len(scores),"%")
+    print("Average Correct Search Results MANHATTAN: ", sum(manhattan_scores)/len(manhattan_scores), "%\n")
 
 
 if __name__ == "__main__":
