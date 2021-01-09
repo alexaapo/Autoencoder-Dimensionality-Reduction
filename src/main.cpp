@@ -85,9 +85,10 @@ int main(int argc, char** argv)
         else if(strcmp(argv[0],"./cluster") == 0)   
         {
             Lloyd = new Cluster(input_file_original_space,output_file,clusters_file,configuration_file,true);
-            Lloyd->Clustering();
-            Lloyd_New = new Cluster(input_file_new_space,output_file,clusters_file,configuration_file,false);
-            Lloyd_New->Clustering();
+            // Lloyd->Clustering();
+            Lloyd->classes_as_clusters();
+            // Lloyd_New = new Cluster(input_file_new_space,output_file,clusters_file,configuration_file,false);
+            // Lloyd_New->Clustering();
         }
         string answer; 
 
