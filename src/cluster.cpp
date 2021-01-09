@@ -215,16 +215,17 @@ void Cluster::Print(float* silhouette_array,int time,float last_obj_value)
 
 void Cluster::classes_as_clusters()
 {
-    map<int, int> new_points; 
-    int label = 0,counter = 0;
     // Read clusters file...
+    map<int, int> new_points; 
+    map<int, int>::iterator it;
+    int label = 0,counter = 0;
     string line;
     ifstream myfile(clusters_file);
     if (myfile.is_open())
     {
         while(getline(myfile,line))
         {
-            cout <<"READING LINE " << label << endl;
+            cout <<"READING LINE " << label << line << endl;
             
             istringstream ss(line);        
             string word; 
@@ -234,22 +235,21 @@ void Cluster::classes_as_clusters()
                 stringstream to_number(word); 
                 int image = 0;
                 to_number >> image;
-                // cout << image << endl;
                 if(counter>3)   new_points[image] = label;
+                counter++;
             }
             label++;
         }
         myfile.close();
     }
     
-    map<int, int>::iterator it;
-
-    for(it=new_points.begin();it!=new_points.end(); it++)
-    {
-        cout << it->first << " " << it->second << endl;
-    }
+    // // Print map...
+    // for(it=new_points.begin();it!=new_points.end(); it++)
+    // {
+    //     file << it->first << " " << it->second << endl;
+    // }
     
-    return;
+    
     // Assign images to predicted clusters...
     int dist1,n1,dist2,n2;
 
@@ -280,33 +280,33 @@ void Cluster::classes_as_clusters()
         points[i]->set_nearest_centroid2(n2);
     }
 
-    /////////// Lets find median centroid fo each cluster...////////////////
-    map <int,Nearest_Centroids*>::iterator it;
-    int cluster=0,median_index=0;
+    // /////////// Lets find median centroid fo each cluster...////////////////
+    // map <int,Nearest_Centroids*>::iterator it;
+    // int cluster=0,median_index=0;
 
-    vector <item> vec;
+    // vector <item> vec;
 
-    for(int i=0;i<kmeansptr->get_K();i++)   
-    {
-        for(int z=0;z<kmeansptr->get_dimensions();z++)
-        {
-            vec.clear();
+    // for(int i=0;i<kmeansptr->get_K();i++)   
+    // {
+    //     for(int z=0;z<kmeansptr->get_dimensions();z++)
+    //     {
+    //         vec.clear();
 
-            for(it=points.begin();it!=points.end();it++)    
-            {
-                cluster = it->second->get_nearest_centroid1();
-                if(cluster==i)
-                    vec.push_back(kmeansptr->get_Images_Array()[it->first][z]);
-            }
+    //         for(it=points.begin();it!=points.end();it++)    
+    //         {
+    //             cluster = it->second->get_nearest_centroid1();
+    //             if(cluster==i)
+    //                 vec.push_back(kmeansptr->get_Images_Array()[it->first][z]);
+    //         }
 
-            if(vec.size()!=0)
-            {
-                sort(vec.begin(),vec.end());
-                median_index = vec.size()/2; 
-                centroids[i][z] = vec[median_index];
-            }
-        }
-    } 
+    //         if(vec.size()!=0)
+    //         {
+    //             sort(vec.begin(),vec.end());
+    //             median_index = vec.size()/2; 
+    //             centroids[i][z] = vec[median_index];
+    //         }
+    //     }
+    // } 
 
     ////////////// Silhouette ////////////////
     // //Declaration of important structures,variables...
