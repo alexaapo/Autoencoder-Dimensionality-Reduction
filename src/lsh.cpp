@@ -128,6 +128,7 @@ Bucket*** LSH::get_Hash_Tables()
 //Function which implements LSH algorithm for num_of_queries images.
 void LSH::Approximate_LSH()
 {   
+    double totalLSH=0.0,totalTrue=0.0,totalReduced=0.0;
     //For each query of query's dataset.
     for(int i=0;i<Num_of_Queries;i++)
     {
@@ -192,11 +193,15 @@ void LSH::Approximate_LSH()
         tLSH[i] = chrono::duration_cast<chrono::microseconds>(end - start).count();  
         file << "tReduced: " << tReduced[i] << "μs" << endl << "tLSH: " << tLSH[i] << "μs" << endl << "tTrue: " << tTrue[i] << "μs";
         time_error += tLSH[i]/tTrue[i];
+        totalLSH += tLSH[i];
+        totalTrue += tTrue[i];
+        totalReduced += tReduced[i];
 
         // Approximate_Range_Search(i);
     }
     
     file << endl << "--------------------------------------------" << endl;
+    // file << "tReduced: " << totalReduced << "μs" << endl << "tLSH: " << totalLSH << "μs" << endl << "tTrue: " << totalTrue << "μs" << endl;
     file << "Approximation Factor LSH: " << dist_AF/(double)(Num_of_Queries*N) << endl;
     file << "Approximation Factor Reduced: " << red_dist_AF/(double)(Num_of_Queries*N) << endl << endl;
     // file << endl << "tLSH/tTrue: " << time_error/(double)(Num_of_Queries) << endl << endl;
@@ -272,16 +277,16 @@ void LSH::InitLSH()
     int Rows=0,Columns=0,New_Rows=0,New_Columns=0;
 
     //Read input binary file...
-    Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,10);
+    Read_BF(&Images_Array,&Num_of_Images,&Columns,&Rows,input_file_original_space,1);
     
     //Read query binary file...
-    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,100);
+    Read_BF(&Queries_Array,&Num_of_Queries,&Columns,&Rows,query_file_original_space,10);
 
     //Read input binary file in new space...
-    Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,10);
+    Read_BF2(&New_Images_Array,&New_Num_of_Images,&New_Columns,&New_Rows,input_file_new_space,1);
     
     //Read query binary file in new space...
-    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,100);
+    Read_BF2(&New_Queries_Array,&New_Num_of_Queries,&New_Columns,&New_Rows,query_file_new_space,10);
 
     file.open(output_file,ios::out);
 
@@ -289,26 +294,6 @@ void LSH::InitLSH()
     {
         file << "Original space" << endl << "Images:" << Num_of_Images << endl << "Queries:" << Num_of_Queries << endl << "Dimensions:" << Rows << "x" << Columns << endl << endl;
         file << "New space" << endl << "Images:" << New_Num_of_Images << endl << "Queries:" << New_Num_of_Queries << endl << "Dimensions:" << New_Rows << "x" << New_Columns << endl << endl;
-        
-        // for(int f=0;f<2;f++)
-        // {
-        //     for(int g=0;g<New_Columns*New_Rows;g++)
-        //     {
-        //         file << New_Images_Array[f][g] << " ";
-        //     }
-        //     file << endl;
-        // }
-
-        // file << endl << endl;
-
-        // for(int f=0;f<2;f++)
-        // {
-        //     for(int g=0;g<New_Columns*New_Rows;g++)
-        //     {
-        //         file << New_Queries_Array[f][g] << " ";
-        //     }
-        //     file << endl;
-        // }
     }
     else cout << "Problem\n";
 
