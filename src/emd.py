@@ -109,8 +109,8 @@ def main(argv):
     train_images = ((train_images-np.min(train_images))/(np.max(train_images)-np.min(train_images)))*255
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
-    train_images = train_images[0:100]
-    test_images = test_images[0:1]
+    train_images = train_images[0:1000]
+    test_images = test_images[0:2]
 
     # size_of_cluster = 49 # 7x7
     size_of_cluster = 16 # 4x4
@@ -126,7 +126,7 @@ def main(argv):
         demand, query_centroids = Calculate_Weights(test_images[i],size_of_cluster,rows,cols)
         neighboors = PriorityQueue()
 
-        print(query_centroids)
+        # print(query_centroids)
 
         for j in range(train_images.shape[0]):
             supply, train_centroids = Calculate_Weights(train_images[j],size_of_cluster,rows,cols)
@@ -169,21 +169,21 @@ def main(argv):
             prob.writeLP("EMD.lp")
 
             # The problem is solved using PuLP's choice of Solver
-            prob.solve()
+            prob.solve(PULP_CBC_CMD(msg=False))
 
-            # The status of the solution is printed to the screen
-            print("Status:", LpStatus[prob.status])
+            # # The status of the solution is printed to the screen
+            # print("Status:", LpStatus[prob.status])
 
-            # Each of the variables is printed with it's resolved optimum value
-            for v in prob.variables():
-                print(v.name, "=", v.varValue)
+            # # Each of the variables is printed with it's resolved optimum value
+            # for v in prob.variables():
+            #     print(v.name, "=", v.varValue)
 
-            # The optimised objective function value is printed to the screen    
-            print("Total Cost of Transportation = ", value(prob.objective))
+            # # The optimised objective function value is printed to the screen    
+            # print("Total Cost of Transportation = ", value(prob.objective))
 
             neighboors.put((value(prob.objective), j))
 
-        print(neighboors)
+        # print(neighboors)
 
         query_label = labels_of_test[i]
         print("query ", query_label)
@@ -195,7 +195,7 @@ def main(argv):
             n = neighboors.get()
             index_label = n[1]
             # index_label = neighboors.get()[1]
-            print(n[0])
+            # print(n[0])
             tr_labels.append(labels_of_train[index_label])
             neigh += 1
         
@@ -203,7 +203,7 @@ def main(argv):
 
         correct_labels = sum(map(lambda x : x == query_label, tr_labels))
 
-        success_rate = (correct_labels/10)*10
+        success_rate = (correct_labels/10)*100
 
         print("Success rate: ", success_rate, "%\n")
         
