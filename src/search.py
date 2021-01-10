@@ -19,9 +19,9 @@ def Load_Mnist_Images(train_images_path):
         img = img.reshape(28, 28)
         images[i][:] = img            
     
-    print("Number of images: ",num_of_images)
-    print("Rows of images: ",rows)
-    print("Cols of images: ",cols)
+    # print("Number of images: ",num_of_images)
+    # print("Rows of images: ",rows)
+    # print("Cols of images: ",cols)
     
     return images,rows,cols
 
@@ -121,8 +121,8 @@ def main(argv):
     test_images = ((test_images-np.min(test_images))/(np.max(test_images)-np.min(test_images)))*255
 
     # Take a subset of data
-    train_images = train_images[0:10]
-    test_images = test_images[0:2]
+    train_images = train_images[0:100]
+    test_images = test_images[0:5]
 
     # size_of_cluster = 49 # 7x7
     size_of_cluster = 16 # 4x4
@@ -242,8 +242,8 @@ def main(argv):
     # Print the results
     for q in range(len(test_images)):
         print("Query label:",query_labels[q])  
-        print("Predicted labels: ",total_predicted[q])
-        print("Score: ",scores[q],"%")
+        print("EMD Predicted labels: ",total_predicted[q])
+        print("EMD Score: ",scores[q],"%")
         print("Manhattan Predicted labels: ",manhattan_total_predicted[q])
         print("Manhattan Score: ",manhattan_scores[q],"%\n")       
     print("Average Correct Search Results EMD: ", sum(scores)/len(scores),"%")
