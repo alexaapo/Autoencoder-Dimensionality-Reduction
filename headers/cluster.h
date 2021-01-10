@@ -57,6 +57,7 @@ class Cluster
         void SlowUpdate();
         float Objective_Value();
         void Print(float* ,int, float);
+        void classes_as_clusters();
 };
 
 #endif

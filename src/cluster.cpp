@@ -212,3 +212,84 @@ void Cluster::Print(float* silhouette_array,int time,float last_obj_value)
     
     file << endl << "Value of Objective Function: " << last_obj_value << endl << endl;
 }
+
+void Cluster::classes_as_clusters()
+{
+    // Read clusters file...
+    map<int, int> new_points; 
+    map<int, int>::iterator it;
+    int label = 0,counter = 0;
+    string line;
+    ifstream myfile(clusters_file);
+    if (myfile.is_open())
+    {
+        while(getline(myfile,line))
+        {
+            // cout <<"READING LINE " << label << line << endl;
+            
+            istringstream ss(line);        
+            string word; 
+            counter = 0;
+            while (ss >> word) 
+            {
+                stringstream to_number(word); 
+                int image = 0;
+                to_number >> image;
+                if(counter>3)   
+                {
+                    new_points[image] = label;
+                    points[image]->set_nearest_centroid1(label);
+                }
+                counter++;
+            }
+            label++;
+        }
+        myfile.close();
+    }
+    
+    // Find new centroids...
+    int cluster=0,median_index=0;
+    vector <item> vec;
+
+    for(int i=0;i<kmeansptr->get_K();i++)   
+    {
+        for(int z=0;z<kmeansptr->get_dimensions();z++)
+        {
+            vec.clear();
+
+            for(it=new_points.begin();it!=new_points.end(); it++)
+            {
+                cluster = it->second;
+                if(cluster==i)
+                    vec.push_back(kmeansptr->get_Images_Array()[it->first][z]);
+            }
+
+            if(vec.size()!=0)
+            {
+                sort(vec.begin(),vec.end());
+                median_index = vec.size()/2; 
+                centroids[i][z] = vec[median_index];
+            }
+        }
+    } 
+
+    //Allocate memory for array with silhouette values...
+    float* silhouette_array = new float[kmeansptr->get_K()+1];    
+    for(int k=0;k<=kmeansptr->get_K();k++)  silhouette_array[k]=0.0;
+    
+    //Calculate Silhouette values.
+    Silhouette(&points,kmeansptr->get_K(),&silhouette_array,kmeansptr);
+    
+    file << endl << "CLASSES AS CLUSTERS" << endl << "Silhouette: [ ";
+
+    for(int i=0;i<=kmeansptr->get_K();i++)   
+    {
+        file << fixed << setprecision(3) << silhouette_array[i];
+        if(i<kmeansptr->get_K()) file << ", ";
+        else    file << " ]";
+    }
+
+    file << endl << "Value of Objective Function: " << Objective_Value() << endl << endl;
+
+    delete [] silhouette_array;
+}   
