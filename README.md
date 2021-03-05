@@ -1,5 +1,6 @@
 # Autoencoder dimensionality reduction, EMD-Manhattan metrics comparison and classifier based clustering on MNIST dataset
 
+
 ## Question A - Dimensionality Reduction:
 
   ### Execution:
@@ -14,6 +15,8 @@
       
 ![index](https://user-images.githubusercontent.com/60033683/110159038-d429d100-7df2-11eb-831c-12ddfd77e4d5.png)
 
+
+
 ## Question B - LSH ANN in original and reduced space
   
    ### Execution:
@@ -25,6 +28,8 @@
    * Brute Force NN on original space
 
 All searches are done with Manhattan metric. The results are compared in terms of search time and approximation factors at the original space, i.e. the average Manhattan approximate distance.
+
+
 
 ## Question 3 - Comparison of Earth Mover's Distance & Manhattan Distance metrics
 
@@ -39,6 +44,8 @@ All searches are done with Manhattan metric. The results are compared in terms o
    This programm implement the EMD metric that solves a Linear Programming Problem and compare it with the Manhattan Distance. We used the library of [PuLP](https://pypi.org/project/PuLP/), which allowed us to define an LpProblem with all the clusters of a train and test image. 
     
    Also for each image, we calculated the weights and costs of transporting a supply as well as all the different routes that can exist between sub-clusters. After defining all this, we added some constraints, stored the optimized value returned by the objective function in a priority queue for each comparison of a query image with a train image, as we could have the 10 nearest neighbors from each query. At the same time, each time we saved the distances and neighbors we found with Manhattan Distance, in order to compare the success rates. The report include all the results of our experiments and the explanation of them.
+   
+   
    
 ## Question 4 - Comparison of Centroid-based clustering on original & reduced space and clustering based in classifier results
 
