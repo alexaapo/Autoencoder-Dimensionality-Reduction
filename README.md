@@ -1,4 +1,4 @@
-# Autoencoder dimensionality reduction, EMD-Manhattan metrics comparison and classifier based clustering on MNIST dataset </br></br></br>
+# Autoencoder dimensionality reduction, EMD-Manhattan metrics comparison and classifier based clustering on MNIST dataset </br>
 
 
 ## Question A - Dimensionality Reduction:
